@@ -1,0 +1,106 @@
+body {
+    background-color: whitesmoke;
+    margin: 0;
+    padding: 30px;
+}
+
+.wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-nav > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    display: flex;
+}
+
+.main-nav > ul > li {
+    position: relative;
+    background: white;
+    border: 1px solid lightgray;
+    margin-right: -1px;
+}
+
+.main-nav > ul > li > a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: royalblue;
+}
+
+.main-nav .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    background: white;
+    border: 1px solid lightgray;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 150px;
+    z-index: 10;
+}
+
+.main-nav .dropdown li {
+    border-bottom: 1px solid whitesmoke;
+}
+
+.main-nav .dropdown a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: royalblue;
+}
+
+.main-nav > ul > li:hover .dropdown {
+    display: block;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.content-part-1, .content-part-2 {
+    background-color: white;
+    padding: 30px;
+}
+
+p{
+    color: dimgray;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    margin: 20px auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 15px 10px;
+}
+
+.main-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.footer-col {
+    background: white;
+    text-align: center;
+    padding: 20px;
+    color: gray;
+}
