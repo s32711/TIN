@@ -1,0 +1,65 @@
+body{
+    font-family: "Google Sans";
+}
+
+.menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo{
+    margin-left: 50px;
+    width: 100px;
+    height: 100px;
+}
+
+.nav-menu{
+    font-size: 2em;
+    margin-right: 10px;
+}
+
+a{
+    text-decoration: none;
+    color: red;
+}
+
+.nav-menu a{
+    padding: 0 15px;
+    border-right: 2px solid #ccc;
+}
+
+.nav-menu a:last-child{
+    border-right: none;
+}
+
+.main-content{
+    display: flex;
+    background-color: lightgray;
+    min-height: 100dvh;
+}
+
+.main-content div {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.zdjecia{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+p{
+    font-size: 30px;
+}
+
+footer{
+    display: flex;
+    justify-content: center;
+    background-color: black;
+    color: white;
+    align-items: center;
+    height: 50px;
+}
