@@ -1,0 +1,125 @@
+
+$base-red: red;
+$nav-red: lighten($base-red, 10%);
+$footer-red: darken($base-red, 30%);
+
+@mixin flex-center($direction: row){
+  display: flex;
+  flex-direction: $direction;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  font-family: "Google Sans";
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+
+  @media (max-width: 768px){
+    flex-direction: column;
+  }
+
+  .logo{
+    margin-left: 50px;
+    width: 100px;
+    height: 100px;
+
+    @media (max-width: 768px){
+      margin-left: 0;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+  }
+
+  .nav-menu{
+    font-size: 2em;
+    margin-right: 10px;
+
+    @media (max-width: 768px){
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-right: 0;
+      text-align: center;
+    }
+
+    a {
+      text-decoration: none;
+      color: $nav-red;
+      padding: 0 15px;
+      border-right: 2px solid lightgray;
+
+
+      &:last-child{
+        border-right: none;
+      }
+
+      @media (max-width: 768px){
+        border-right: none;
+        border-top: 1px solid lightgray;
+        padding: 15px 0;
+
+        &:last-child{
+          border-bottom: 1px solid lightgray;
+        }
+      }
+    }
+  }
+}
+
+.main-content{
+  display: flex;
+  background-color: lightgray;
+  flex: 1;
+  padding: 20px 0;
+
+  @media (max-width: 768px){
+    flex-direction: column;
+  }
+
+  div {
+    margin: 0 20px 20px 20px;
+
+    h1 {
+      color: $base-red;
+    }
+  }
+
+  .zdjecia{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+
+    @media (max-width: 768px){
+      grid-template-columns: 1fr;
+    }
+
+    img {
+      display: block;
+    }
+  }
+
+  p {
+    font-size: 30px;
+
+    @media (max-width: 768px){
+      font-size: 18px;
+    }
+  }
+}
+
+footer {
+  @include flex-center();
+  background-color: $footer-red;
+  color: white;
+  height: 50px;
+}
