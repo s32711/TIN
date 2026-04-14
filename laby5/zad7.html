@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Zadanie 7</title>
+</head>
+<body>
+<script>
+  function poleProstokata(a, b) { return a * b; }
+  function poleTrapezu(a, b, h) { return ((a + b) * h) / 2; }
+  function poleRownolegloboku(a, h) { return a * h; }
+  function poleTrojkata(a, h) { return (a * h) / 2; }
+
+  function obliczPole(figura, p1, p2, p3) {
+    switch (figura.toLowerCase()) {
+      case 'prostokąt':
+        console.log(`Pole prostokąta wynosi: ${poleProstokata(p1, p2)}`);
+        break;
+      case 'trapez':
+        console.log(`Pole trapezu wynosi: ${poleTrapezu(p1, p2, p3)}`);
+        break;
+      case 'równoległobok':
+        console.log(`Pole równoległoboku wynosi: ${poleRownolegloboku(p1, p2)}`);
+        break;
+      case 'trójkąt':
+        console.log(`Pole trójkąta wynosi: ${poleTrojkata(p1, p2)}`);
+        break;
+      default:
+        console.log('Nieznana figura.');
+    }
+  }
+
+  obliczPole('trapez', 4, 6, 3);
+  obliczPole('prostokąt', 5, 10);
+  obliczPole('trójkąt', 2, 3)
+</script>
+</body>
+</html>

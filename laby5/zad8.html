@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zadanie 8</title>
+</head>
+<body>
+<script>
+    function pascal(wysokosc) {
+        let trojkat = [];
+
+        for (let i = 0; i < wysokosc; i++) {
+            trojkat[i] = [];
+            trojkat[i][0] = 1;
+
+            for (let j = 1; j < i; j++) {
+                trojkat[i][j] = trojkat[i - 1][j - 1] + trojkat[i - 1][j];
+            }
+
+            if (i > 0) {
+                trojkat[i][i] = 1;
+            }
+
+            console.log(trojkat[i].join(' '));
+        }
+    }
+
+    pascal(5);
+</script>
+</body>
+</html>

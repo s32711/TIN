@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zadanie 1</title>
+</head>
+<body>
+<script>
+    function pitagoras(a, b, c) {
+        let boki = [a, b, c].sort((x, y) => x - y);
+
+        let wynik = Math.pow(boki[0], 2) + Math.pow(boki[1], 2) === Math.pow(boki[2], 2);
+
+        console.log(`Czy liczby ${a}, ${b}, ${c} tworzą trójkę pitagorejską? ${wynik}`);
+        return wynik;
+    }
+
+    pitagoras(5, 3, 4);
+</script>
+</body>
+</html>

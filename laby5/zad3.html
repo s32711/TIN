@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Zadanie 3</title>
+</head>
+<body>
+<script>
+  function tabliczka(n) {
+    for (let i = 1; i <= n; i++) {
+      let wiersz = '';
+      for (let j = 1; j <= n; j++) {
+        wiersz += (i * j) + ' ';
+      }
+      console.log(wiersz.trim());
+    }
+  }
+
+  tabliczka(3);
+</script>
+</body>
+</html>

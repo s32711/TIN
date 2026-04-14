@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Zadanie 4</title>
+</head>
+<body>
+<script>
+  function fibonacci(n) {
+    if (n <= 0) return;
+
+    let a = 0;
+    let b = 1;
+    let wynik = [];
+
+    for (let i = 0; i < n; i++) {
+      wynik.push(a);
+      let nastepna = a + b;
+      a = b;
+      b = nastepna;
+    }
+
+    console.log(wynik.join(', '));
+  }
+
+  fibonacci(7);
+</script>
+</body>
+</html>

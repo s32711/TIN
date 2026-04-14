@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Zadanie 2</title>
+</head>
+<body>
+<script>
+    function petla(a, b, c) {
+        console.log(`Liczby z przedziału ${a}-${b} podzielne przez ${c}:`);
+        for (let i = a; i <= b; i++) {
+            if (i % c === 0) {
+                console.log(i);
+            }
+        }
+    }
+
+    petla(10, 20, 3);
+</script>
+</body>
+</html>
