@@ -1,0 +1,55 @@
+body {
+    font-family: "Times New Roman", Times, serif;
+    background-color: white;
+    padding: 20px;
+}
+
+.akordeon-pojemnik {
+    width: 800px;
+}
+
+.student-wrapper {
+    margin-top: -1px;
+}
+
+.student-belka {
+    background-color: #999999;
+    border: 1px solid black;
+    padding: 5px 10px;
+    font-size: 28px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.student-belka.rozwiniety {
+    background-color: white;
+}
+
+.student-detale {
+    display: none;
+    border: 1px solid black;
+    border-top: none;
+    background-color: white;
+    padding: 30px 40px;
+}
+
+.student-detale.pokaz {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+ul {
+    margin: 0;
+    padding-left: 40px;
+    font-size: 28px;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+.srednia-tekst {
+    font-size: 28px;
+    margin-right: 150px;
+}
