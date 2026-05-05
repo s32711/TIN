@@ -1,0 +1,68 @@
+body {
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    font-family: Arial, sans-serif;
+}
+
+.tlo {
+    background-color: darkgrey;
+    padding: 30px;
+    width: 500px;
+}
+
+#okno-wynikow {
+    background-color: lightskyblue;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 20px;
+    font-size: 40px;
+    color: grey;
+    border: 2px solid grey;
+    border-bottom: none;
+}
+
+.kontrola {
+    background-color: whitesmoke;
+    padding: 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border: 2px solid grey;
+}
+
+.wejscie {
+    display: flex;
+    flex-direction: column;
+}
+
+.wejscie label {
+    font-size: 13px;
+    color: dimgrey;
+    margin-bottom: 5px;
+}
+
+.wejscie input, .wejscie select {
+    font-size: 20px;
+    padding: 5px;
+    width: 80px;
+    text-align: center;
+    border: 1px solid lightgrey;
+}
+
+#oblicz {
+    background-color: grey;
+    color: white;
+    font-size: 24px;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    height: 50px;
+}
+
+#oblicz:hover {
+    background-color: darkslategrey;
+}
