@@ -1,0 +1,573 @@
+```html
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Runner - Projekt TI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0f172a; 
+            overflow: hidden; 
+            touch-action: none; 
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #020617;
+            border-bottom: 2px solid #334155;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center">
+
+    <div class="relative w-full max-w-4xl aspect-video bg-slate-950 overflow-hidden shadow-2xl rounded-lg">
+        
+        <canvas id="ekranGry"></canvas>
+
+        <!-- UI: Ekran Startowy -->
+        <div id="ekranStart" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-10">
+            <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-6 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">NEON RUNNER</h1>
+            <p class="text-slate-300 mb-8 text-center px-4 leading-relaxed">
+                Naciśnij <span class="text-cyan-400 font-bold">SPACJĘ</span> lub <span class="text-cyan-400 font-bold">EKRAN</span>, aby skakać.<br>
+                Odblokowano: <span class="text-emerald-400 font-bold">PODWÓJNY SKOK</span> w powietrzu!<br>
+                Zbieraj <span class="text-amber-400 font-bold">ZŁOTE KRYSZTAŁY</span> dla bonusu punktów.
+            </p>
+            <button id="btnStart" class="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-full transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.6)]">
+                ZAGRAJ TERAZ
+            </button>
+        </div>
+
+        <!-- UI: Ekran Game Over -->
+        <div id="ekranKoniec" class="absolute inset-0 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md z-20 hidden">
+            <h2 class="text-6xl font-black text-rose-500 mb-2 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]">GAME OVER</h2>
+            <p class="text-2xl text-white mb-6">Twój wynik: <span id="wynikKoncowy" class="text-cyan-400 font-bold">0</span></p>
+            
+            <div id="sekcjaZapisu" class="flex flex-col items-center mb-6">
+                <input type="text" id="inputNazwa" maxlength="10" placeholder="TWOJE IMIĘ..." class="px-4 py-2 bg-slate-800 text-cyan-300 border border-slate-600 rounded-md focus:outline-none focus:border-cyan-400 mb-3 text-center uppercase font-bold tracking-widest">
+                <p id="bladNazwy" class="text-rose-500 text-sm hidden mb-3 font-bold drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]">Wpisz swoje imię, aby zapisać!</p>
+                <div class="flex gap-4">
+                    <button id="btnPomin" class="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-full transition-all shadow-[0_0_15px_rgba(71,85,105,0.5)]">POMIŃ</button>
+                    <button id="btnZapisz" class="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold rounded-full transition-all shadow-[0_0_15px_rgba(16,185,129,0.5)]">ZAPISZ</button>
+                </div>
+            </div>
+
+            <div id="sekcjaWynikow" class="bg-slate-900 border border-slate-700 rounded-lg p-4 w-64 mb-6 hidden">
+                <h3 class="text-slate-400 text-sm uppercase tracking-wider mb-3 text-center border-b border-slate-700 pb-2">Top 5 Graczy</h3>
+                <ul id="listaWynikow" class="space-y-2 text-sm text-slate-300"></ul>
+            </div>
+
+            <button id="btnRestart" class="px-8 py-4 bg-rose-500 hover:bg-rose-400 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(244,63,94,0.6)] hidden">
+                ZAGRAJ PONOWNIE
+            </button>
+        </div>
+
+        <!-- HUD: Bieżący wynik -->
+        <div id="uiPunkty" class="absolute top-4 right-6 text-3xl font-black text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)] z-0 transition-transform duration-100">
+            00000
+        </div>
+        
+        <!-- Przycisk włączania/wyłączania audio -->
+        <button id="btnDzwiek" class="absolute top-4 left-6 text-sm md:text-base font-bold text-slate-400 border border-slate-600 px-3 py-1 rounded hover:bg-slate-800 transition-colors z-10">
+            🔇 AUDIO WYŁ.
+        </button>
+    </div>
+
+    <script>
+        /**
+         * TI PROJEKT - Endless Runner (Deluxe Edition)
+         * Autor: Maks
+         * Opis: Gra obiektowa w czystym JavaScript. 
+         */
+
+        const plotno = document.getElementById('ekranGry');
+        const rys = plotno.getContext('2d');
+        const rodzicDiv = plotno.parentElement;
+
+        const ekranStart = document.getElementById('ekranStart');
+        const ekranKoniec = document.getElementById('ekranKoniec');
+        const btnStart = document.getElementById('btnStart');
+        const btnRestart = document.getElementById('btnRestart');
+        const uiPunkty = document.getElementById('uiPunkty');
+        const wynikKoncowy = document.getElementById('wynikKoncowy');
+        const listaWynikow = document.getElementById('listaWynikow');
+        const sekcjaZapisu = document.getElementById('sekcjaZapisu');
+        const sekcjaWynikow = document.getElementById('sekcjaWynikow');
+        const inputNazwa = document.getElementById('inputNazwa');
+        const btnZapisz = document.getElementById('btnZapisz');
+        const btnPomin = document.getElementById('btnPomin');
+        const bladNazwy = document.getElementById('bladNazwy');
+        const btnDzwiek = document.getElementById('btnDzwiek');
+
+        function dopasujEkran() {
+            plotno.width = rodzicDiv.clientWidth;
+            plotno.height = rodzicDiv.clientHeight;
+        }
+        window.addEventListener('resize', dopasujEkran);
+        dopasujEkran();
+
+        let klatki = 0;
+        let punkty = 0;
+        let predkoscGry = 5;
+        let idAnimacji = null; // Zmienna trzymająca identyfikator pętli gry
+        let czyTrwaGra = false;
+        
+        let przeszkody = [];
+        let znajdzki = [];
+        let czasteczki = [];
+        let gwiazdyTla = [];
+        let mocWstrzasu = 0;
+        
+        const wysPodlogi = 40;
+
+        // --- SILNIK AUDIO ---
+        const kontekstAudio = new (window.AudioContext || window.webkitAudioContext)();
+        let czyAudioWlaczone = false;
+        let idMuzyki = null;
+        let indexNuty = 0;
+        const nuty = [195.998, 220.000, 261.626, 293.665, 329.628, 261.626]; 
+
+        function grajDzwiek(typ, startFreq, endFreq, czasTrwania, glosnoscMax) {
+            if (!czyAudioWlaczone) return;
+            const osc = kontekstAudio.createOscillator();
+            const gain = kontekstAudio.createGain();
+            osc.type = typ; 
+            osc.frequency.setValueAtTime(startFreq, kontekstAudio.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(endFreq, kontekstAudio.currentTime + czasTrwania);
+            gain.gain.setValueAtTime(glosnoscMax, kontekstAudio.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, kontekstAudio.currentTime + czasTrwania);
+            osc.connect(gain);
+            gain.connect(kontekstAudio.destination);
+            osc.start();
+            osc.stop(kontekstAudio.currentTime + czasTrwania);
+        }
+
+        function dzwiekSkoku() { grajDzwiek('square', 150, 400, 0.15, 0.05); }
+        function dzwiekPodwojnegoSkoku() { grajDzwiek('square', 250, 600, 0.15, 0.05); }
+        function dzwiekZderzenia() { grajDzwiek('sawtooth', 150, 20, 0.5, 0.15); }
+        function dzwiekZebrania() { grajDzwiek('sine', 800, 1600, 0.1, 0.08); } 
+        function dzwiekMuzykiTla() {
+            if (!czyAudioWlaczone || !czyTrwaGra) return;
+            grajDzwiek('sine', nuty[indexNuty] / 2, nuty[indexNuty] / 2, 0.2, 0.03);
+            indexNuty = (indexNuty + 1) % nuty.length;
+        }
+
+        btnDzwiek.addEventListener('click', () => {
+            czyAudioWlaczone = !czyAudioWlaczone;
+            if (czyAudioWlaczone) {
+                btnDzwiek.innerText = '🔊 AUDIO WŁ.';
+                btnDzwiek.classList.replace('text-slate-400', 'text-cyan-400');
+                btnDzwiek.classList.replace('border-slate-600', 'border-cyan-400');
+                if (kontekstAudio.state === 'suspended') kontekstAudio.resume();
+            } else {
+                btnDzwiek.innerText = '🔇 AUDIO WYŁ.';
+                btnDzwiek.classList.replace('text-cyan-400', 'text-slate-400');
+                btnDzwiek.classList.replace('border-cyan-400', 'border-slate-600');
+            }
+        });
+
+        // --- KLASY (OBIEKTY GRY) ---
+
+        class Gracz {
+            constructor() {
+                this.rozmiar = plotno.height * 0.08; 
+                this.x = plotno.width * 0.1; 
+                this.y = plotno.height - wysPodlogi - this.rozmiar;
+                this.predkoscY = 0;
+                this.grawitacja = plotno.height * 0.0010; 
+                this.silaSkoku = plotno.height * -0.023; 
+                this.maxSkoki = 2;
+                this.oddaneSkoki = 0;
+                this.widoczny = true; 
+            }
+
+            aktualizuj() {
+                if(!this.widoczny) return;
+                
+                this.predkoscY += this.grawitacja;
+                this.y += this.predkoscY;
+
+                const poziomZiemi = plotno.height - wysPodlogi - this.rozmiar;
+                if (this.y >= poziomZiemi) {
+                    this.y = poziomZiemi;
+                    this.predkoscY = 0;
+                    this.oddaneSkoki = 0; 
+                }
+            }
+
+            skacz() {
+                if (!this.widoczny) return;
+                
+                if (this.oddaneSkoki < this.maxSkoki) {
+                    this.predkoscY = this.silaSkoku;
+                    this.oddaneSkoki++;
+                    
+                    if(this.oddaneSkoki === 1) dzwiekSkoku();
+                    else dzwiekPodwojnegoSkoku();
+                    
+                    tworzWybuch(this.x + this.rozmiar/2, this.y + this.rozmiar, '#22d3ee', 5, 2);
+                }
+            }
+
+            rysuj() {
+                if(!this.widoczny) return;
+                
+                rys.fillStyle = '#22d3ee';
+                rys.shadowColor = '#22d3ee';
+                rys.shadowBlur = 15;
+                rys.fillRect(this.x, this.y, this.rozmiar, this.rozmiar);
+                
+                if (this.oddaneSkoki === this.maxSkoki) {
+                    rys.fillStyle = '#0ea5e9'; 
+                    rys.fillRect(this.x + 5, this.y + 5, this.rozmiar - 10, this.rozmiar - 10);
+                }
+                rys.shadowBlur = 0; 
+            }
+        }
+
+        class Przeszkoda {
+            constructor() {
+                this.szer = plotno.width * 0.04;
+                this.wys = plotno.height * (Math.random() * 0.1 + 0.08); 
+                this.x = plotno.width;
+                this.y = plotno.height - wysPodlogi - this.wys;
+            }
+            aktualizuj() { this.x -= predkoscGry; }
+            rysuj() {
+                rys.fillStyle = '#f43f5e';
+                rys.shadowColor = '#f43f5e';
+                rys.shadowBlur = 20;
+                rys.fillRect(this.x, this.y, this.szer, this.wys);
+                rys.shadowBlur = 0;
+            }
+        }
+
+        class Znajdzka {
+            constructor() {
+                this.rozmiar = plotno.height * 0.04;
+                this.x = plotno.width;
+                this.y = plotno.height - wysPodlogi - (plotno.height * (Math.random() * 0.3 + 0.15));
+                this.bazoweY = this.y;
+                this.kat = 0;
+            }
+            aktualizuj() { 
+                this.x -= predkoscGry; 
+                this.y = this.bazoweY + Math.sin(this.kat) * 10;
+                this.kat += 0.1;
+            }
+            rysuj() {
+                rys.fillStyle = '#fbbf24'; 
+                rys.shadowColor = '#fbbf24';
+                rys.shadowBlur = 15;
+                
+                rys.save();
+                rys.translate(this.x + this.rozmiar/2, this.y + this.rozmiar/2);
+                rys.rotate(this.kat);
+                rys.fillRect(-this.rozmiar/2, -this.rozmiar/2, this.rozmiar, this.rozmiar);
+                rys.restore();
+            }
+        }
+
+        class Czasteczka {
+            constructor(x, y, kolor, predkoscStart) {
+                this.x = x;
+                this.y = y;
+                this.kolor = kolor;
+                this.vx = (Math.random() - 0.5) * predkoscStart;
+                this.vy = (Math.random() - 1.0) * predkoscStart;
+                this.rozmiar = Math.random() * 8 + 2;
+                this.alpha = 1.0;
+                this.grawitacja = 0.5;
+            }
+            aktualizuj() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += this.grawitacja;
+                this.alpha -= 0.02; 
+            }
+            rysuj() {
+                rys.globalAlpha = this.alpha;
+                rys.fillStyle = this.kolor;
+                rys.fillRect(this.x, this.y, this.rozmiar, this.rozmiar);
+                rys.globalAlpha = 1.0;
+            }
+        }
+
+        class Gwiazda {
+            constructor() {
+                this.x = Math.random() * plotno.width;
+                this.y = Math.random() * (plotno.height - wysPodlogi);
+                this.rozmiar = Math.random() * 3;
+                this.predkosc = (Math.random() * 0.5 + 0.1) * predkoscGry; 
+            }
+            aktualizuj() {
+                this.x -= this.predkosc;
+                if (this.x < 0) {
+                    this.x = plotno.width;
+                    this.y = Math.random() * (plotno.height - wysPodlogi);
+                }
+            }
+            rysuj() {
+                rys.fillStyle = `rgba(255, 255, 255, ${this.rozmiar/3})`;
+                rys.fillRect(this.x, this.y, this.rozmiar, this.rozmiar);
+            }
+        }
+
+        let gracz;
+
+        // --- FUNKCJE POMOCNICZE ---
+
+        function tworzWybuch(x, y, kolor, ilosc, predkoscStart = 15) {
+            for (let i = 0; i < ilosc; i++) {
+                czasteczki.push(new Czasteczka(x, y, kolor, predkoscStart));
+            }
+        }
+
+        function czyKolizja(g, p) {
+            let szerG = g.rozmiar || g.szer;
+            let wysG = g.rozmiar || g.wys;
+            let szerP = p.rozmiar || p.szer;
+            let wysP = p.rozmiar || p.wys;
+            
+            return (
+                g.x < p.x + szerP &&
+                g.x + szerG > p.x &&
+                g.y < p.y + wysP &&
+                g.y + wysG > p.y
+            );
+        }
+
+        // --- LOGIKA GŁÓWNA ---
+
+        function startGry() {
+            // FIX: Zabicie poprzedniej pętli animacji przed startem nowej!
+            if (idAnimacji) {
+                cancelAnimationFrame(idAnimacji);
+            }
+
+            if (kontekstAudio.state === 'suspended' && czyAudioWlaczone) kontekstAudio.resume();
+
+            dopasujEkran(); 
+            gracz = new Gracz();
+            przeszkody = [];
+            znajdzki = [];
+            czasteczki = [];
+            gwiazdyTla = [];
+            
+            for(let i=0; i<50; i++) gwiazdyTla.push(new Gwiazda());
+
+            punkty = 0;
+            klatki = 0;
+            mocWstrzasu = 0;
+            predkoscGry = plotno.width * 0.0055; 
+            
+            ekranStart.classList.add('hidden');
+            ekranKoniec.classList.add('hidden');
+            uiPunkty.style.display = 'block';
+            czyTrwaGra = true;
+            
+            if (idMuzyki) clearInterval(idMuzyki);
+            idMuzyki = setInterval(dzwiekMuzykiTla, 200);
+
+            petlaGry();
+        }
+
+        function petlaGry() {
+            rys.clearRect(0, 0, plotno.width, plotno.height);
+            
+            rys.save();
+            if (mocWstrzasu > 0) {
+                const trzesX = (Math.random() - 0.5) * mocWstrzasu;
+                const trzesY = (Math.random() - 0.5) * mocWstrzasu;
+                rys.translate(trzesX, trzesY);
+                mocWstrzasu *= 0.9; 
+                if (mocWstrzasu < 0.5) mocWstrzasu = 0;
+            }
+
+            gwiazdyTla.forEach(g => { if(czyTrwaGra) g.aktualizuj(); g.rysuj(); });
+            
+            rys.fillStyle = '#0f172a';
+            rys.fillRect(0, plotno.height - wysPodlogi, plotno.width, wysPodlogi);
+            rys.strokeStyle = '#334155';
+            rys.lineWidth = 2;
+            rys.beginPath();
+            rys.moveTo(0, plotno.height - wysPodlogi);
+            rys.lineTo(plotno.width, plotno.height - wysPodlogi);
+            rys.stroke();
+
+            for (let i = 0; i < czasteczki.length; i++) {
+                czasteczki[i].aktualizuj();
+                czasteczki[i].rysuj();
+                if (czasteczki[i].alpha <= 0) {
+                    czasteczki.splice(i, 1);
+                    i--;
+                }
+            }
+
+            if (czyTrwaGra) {
+                gracz.aktualizuj();
+                gracz.rysuj();
+
+                if (klatki % Math.floor(100 / (predkoscGry / 5)) === 0) {
+                    przeszkody.push(new Przeszkoda());
+                    if (Math.random() < 0.3) znajdzki.push(new Znajdzka());
+                }
+
+                for (let i = 0; i < znajdzki.length; i++) {
+                    let z = znajdzki[i];
+                    z.aktualizuj();
+                    z.rysuj();
+
+                    if (czyKolizja(gracz, z)) {
+                        dzwiekZebrania();
+                        tworzWybuch(z.x, z.y, '#fbbf24', 10, 8); 
+                        punkty += 50; 
+                        uiPunkty.style.transform = 'scale(1.5)';
+                        setTimeout(() => uiPunkty.style.transform = 'scale(1)', 150);
+                        znajdzki.splice(i, 1);
+                        i--;
+                    }
+                    else if (z.x + z.rozmiar < 0) {
+                        znajdzki.splice(i, 1);
+                        i--; 
+                    }
+                }
+
+                for (let i = 0; i < przeszkody.length; i++) {
+                    let p = przeszkody[i];
+                    p.aktualizuj();
+                    p.rysuj();
+
+                    if (czyKolizja(gracz, p)) {
+                        koniecGry();
+                        tworzWybuch(gracz.x + gracz.rozmiar/2, gracz.y + gracz.rozmiar/2, '#22d3ee', 40, 20);
+                    }
+                    else if (p.x + p.szer < 0) {
+                        przeszkody.splice(i, 1);
+                        i--; 
+                    }
+                }
+
+                punkty++;
+                uiPunkty.innerText = punkty.toString().padStart(5, '0');
+                if (punkty % 500 === 0) predkoscGry += plotno.width * 0.0003;
+                klatki++;
+            }
+
+            rys.restore(); 
+            idAnimacji = requestAnimationFrame(petlaGry);
+        }
+
+        // --- WEJŚCIE I ZDARZENIA ---
+
+        function obslugaWejscia(e) {
+            if (!czyTrwaGra) return;
+            if (e.type === 'keydown') {
+                if (e.code === 'Space' || e.code === 'ArrowUp') {
+                    gracz.skacz();
+                    e.preventDefault(); 
+                }
+            }
+            if (e.type === 'mousedown' || e.type === 'touchstart') {
+                gracz.skacz();
+            }
+        }
+
+        window.addEventListener('keydown', obslugaWejscia);
+        plotno.addEventListener('mousedown', obslugaWejscia);
+        plotno.addEventListener('touchstart', obslugaWejscia, {passive: false});
+        btnStart.addEventListener('click', startGry);
+        btnRestart.addEventListener('click', startGry);
+
+        btnPomin.addEventListener('click', async () => {
+            sekcjaZapisu.classList.add('hidden');
+            sekcjaWynikow.classList.remove('hidden');
+            btnRestart.classList.remove('hidden');
+            listaWynikow.innerHTML = '<li class="text-center italic text-slate-500">Ładowanie wyników...</li>';
+            await pobierzWyniki(); 
+        });
+
+        btnZapisz.addEventListener('click', async () => {
+            const nazwa = inputNazwa.value.trim().toUpperCase();
+            if (!nazwa) {
+                bladNazwy.classList.remove('hidden');
+                inputNazwa.classList.replace('border-slate-600', 'border-rose-500');
+                return; 
+            }
+            sekcjaZapisu.classList.add('hidden');
+            sekcjaWynikow.classList.remove('hidden');
+            btnRestart.classList.remove('hidden');
+            listaWynikow.innerHTML = '<li class="text-center italic text-slate-500">Zapisywanie...</li>';
+            await zapiszWynik(punkty, nazwa);
+            await pobierzWyniki();
+        });
+
+        // --- ZAKOŃCZENIE I BAZA DANYCH ---
+
+        function koniecGry() {
+            czyTrwaGra = false;
+            gracz.widoczny = false; 
+            mocWstrzasu = 30; 
+            
+            clearInterval(idMuzyki); 
+            dzwiekZderzenia(); 
+            
+            setTimeout(() => {
+                uiPunkty.style.display = 'none';
+                wynikKoncowy.innerText = punkty;
+                sekcjaZapisu.classList.remove('hidden');
+                sekcjaWynikow.classList.add('hidden');
+                btnRestart.classList.add('hidden');
+                inputNazwa.value = ''; 
+                bladNazwy.classList.add('hidden');
+                inputNazwa.classList.replace('border-rose-500', 'border-slate-600');
+                
+                ekranKoniec.classList.remove('hidden');
+                inputNazwa.focus();
+            }, 800);
+        }
+
+        async function zapiszWynik(nowyWynik, nazwaGracza) {
+            await new Promise(resolve => setTimeout(resolve, 600));
+            let zapisaneWyniki = JSON.parse(localStorage.getItem('neonRunnerDB')) || [];
+            zapisaneWyniki.push({ nazwa: nazwaGracza, punkty: nowyWynik });
+            localStorage.setItem('neonRunnerDB', JSON.stringify(zapisaneWyniki));
+        }
+
+        async function pobierzWyniki() {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            let zapisaneWyniki = JSON.parse(localStorage.getItem('neonRunnerDB')) || [];
+            zapisaneWyniki.sort((a, b) => b.punkty - a.punkty);
+            const topWyniki = zapisaneWyniki.slice(0, 5).map((wynik, index) => {
+                return { pozycja: index + 1, punkty: wynik.punkty, nazwa: wynik.nazwa };
+            });
+            renderujWyniki(topWyniki);
+        }
+
+        function renderujWyniki(tablicaWynikow) {
+            listaWynikow.innerHTML = ''; 
+            if (tablicaWynikow.length === 0) {
+                listaWynikow.innerHTML = '<li class="text-center italic text-slate-500">Brak wyników</li>';
+                return;
+            }
+            tablicaWynikow.forEach(element => {
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-center bg-slate-800 p-2 rounded";
+                const toAktualnyWynik = (element.punkty === punkty && element.nazwa === (inputNazwa.value.trim().toUpperCase()));
+                li.innerHTML = `
+                    <span class="font-bold ${toAktualnyWynik ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]' : 'text-slate-400'}">
+                        #${element.pozycja} ${element.nazwa}
+                    </span>
+                    <span class="font-mono ${toAktualnyWynik ? 'text-cyan-300' : 'text-slate-300'}">${element.punkty}</span>
+                `;
+                listaWynikow.appendChild(li);
+            });
+        }
+
+    </script>
+</body>
+</html>
