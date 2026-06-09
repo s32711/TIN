@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Runner - Projekt TI</title>
+    <title>Neon Runner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -29,7 +28,6 @@
         
         <canvas id="ekranGry"></canvas>
 
-        <!-- UI: Ekran Startowy -->
         <div id="ekranStart" class="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-10">
             <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 mb-6 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">NEON RUNNER</h1>
             <p class="text-slate-300 mb-8 text-center px-4 leading-relaxed">
@@ -42,7 +40,7 @@
             </button>
         </div>
 
-        <!-- UI: Ekran Game Over -->
+        <!-- Game Over -->
         <div id="ekranKoniec" class="absolute inset-0 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md z-20 hidden">
             <h2 class="text-6xl font-black text-rose-500 mb-2 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]">GAME OVER</h2>
             <p class="text-2xl text-white mb-6">Twój wynik: <span id="wynikKoncowy" class="text-cyan-400 font-bold">0</span></p>
@@ -66,24 +64,18 @@
             </button>
         </div>
 
-        <!-- HUD: Bieżący wynik -->
+        <!-- Bieżący wynik -->
         <div id="uiPunkty" class="absolute top-4 right-6 text-3xl font-black text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)] z-0 transition-transform duration-100">
             00000
         </div>
         
-        <!-- Przycisk włączania/wyłączania audio -->
+        <!-- Przycisk audio -->
         <button id="btnDzwiek" class="absolute top-4 left-6 text-sm md:text-base font-bold text-slate-400 border border-slate-600 px-3 py-1 rounded hover:bg-slate-800 transition-colors z-10">
             🔇 AUDIO WYŁ.
         </button>
     </div>
 
     <script>
-        /**
-         * TI PROJEKT - Endless Runner (Deluxe Edition)
-         * Autor: Maks
-         * Opis: Gra obiektowa w czystym JavaScript. 
-         */
-
         const plotno = document.getElementById('ekranGry');
         const rys = plotno.getContext('2d');
         const rodzicDiv = plotno.parentElement;
@@ -113,7 +105,7 @@
         let klatki = 0;
         let punkty = 0;
         let predkoscGry = 5;
-        let idAnimacji = null; // Zmienna trzymająca identyfikator pętli gry
+        let idAnimacji = null;
         let czyTrwaGra = false;
         
         let przeszkody = [];
@@ -124,7 +116,7 @@
         
         const wysPodlogi = 40;
 
-        // --- SILNIK AUDIO ---
+        //AUDIO
         const kontekstAudio = new (window.AudioContext || window.webkitAudioContext)();
         let czyAudioWlaczone = false;
         let idMuzyki = null;
@@ -170,7 +162,7 @@
             }
         });
 
-        // --- KLASY (OBIEKTY GRY) ---
+        //Obiekty gry
 
         class Gracz {
             constructor() {
@@ -319,8 +311,6 @@
 
         let gracz;
 
-        // --- FUNKCJE POMOCNICZE ---
-
         function tworzWybuch(x, y, kolor, ilosc, predkoscStart = 15) {
             for (let i = 0; i < ilosc; i++) {
                 czasteczki.push(new Czasteczka(x, y, kolor, predkoscStart));
@@ -341,10 +331,9 @@
             );
         }
 
-        // --- LOGIKA GŁÓWNA ---
+        //LOGIKA
 
         function startGry() {
-            // FIX: Zabicie poprzedniej pętli animacji przed startem nowej!
             if (idAnimacji) {
                 cancelAnimationFrame(idAnimacji);
             }
@@ -462,7 +451,7 @@
             idAnimacji = requestAnimationFrame(petlaGry);
         }
 
-        // --- WEJŚCIE I ZDARZENIA ---
+        //WEJŚCIA I ZDARZENIA
 
         function obslugaWejscia(e) {
             if (!czyTrwaGra) return;
@@ -506,7 +495,7 @@
             await pobierzWyniki();
         });
 
-        // --- ZAKOŃCZENIE I BAZA DANYCH ---
+        //KONIEC
 
         function koniecGry() {
             czyTrwaGra = false;
